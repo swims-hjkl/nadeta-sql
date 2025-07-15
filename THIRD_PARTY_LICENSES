@@ -1,0 +1,5 @@
+This project uses the following third-party packages:
+
+1.  github.com/mattn/go-sqlite3
+    License: MIT
+    https://github.com/mattn/go-sqlite3/blob/master/LICENSE

@@ -1,0 +1,4 @@
+dist
+.nadeta-sql-config.json
+migration-files
+*.db
