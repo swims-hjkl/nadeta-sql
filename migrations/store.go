@@ -1,7 +1,6 @@
 package migrations
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
 	"io"
@@ -16,6 +15,8 @@ import (
 	"github.com/swims/nadeta-sql/dbutil"
 	"github.com/swims/nadeta-sql/types"
 )
+
+var ErrNoRows = errors.New("no rows found")
 
 // should handle filesystem and database
 type MigrationStore struct {
@@ -66,7 +67,7 @@ func (migrationStore *MigrationStore) RunMigration(migrationName string, migrati
 			}
 		}
 		if migrationType == types.MIGRATION_TYPE_UP {
-			err := migrationStore.DBInsertMigrationData(migrationName)
+			err := migrationStore.dbInsertMigrationData(migrationName)
 			if err != nil {
 				return err
 			}
@@ -75,7 +76,7 @@ func (migrationStore *MigrationStore) RunMigration(migrationName string, migrati
 	return nil
 }
 
-func (migrationStore *MigrationStore) DBInsertMigrationData(migrationName string) error {
+func (migrationStore *MigrationStore) dbInsertMigrationData(migrationName string) error {
 	query := fmt.Sprintf(
 		"INSERT INTO %s (MigrationName, UnixOrder) VALUES (?, ?)",
 		constants.SQL_SCHEMA_MIGRATION_TABLE_NAME,
@@ -97,6 +98,9 @@ func (migrationStore *MigrationStore) DBGetLatestMigration(isDryRun bool) (*type
 	rows, err := migrationStore.dbUtil.RunQuery(queryString, nil, isDryRun)
 	if err != nil {
 		return nil, err
+	}
+	if rows == nil {
+		return nil, ErrNoRows
 	}
 	defer rows.Close()
 	for rows.Next() {
@@ -192,37 +196,21 @@ func (migrationStore *MigrationStore) deleteFile(migrationFilePath string) error
 }
 
 func (migrationStore *MigrationStore) FileDeleteMigration(migrationName string) error {
-	repeatFlag := true
-	reader := bufio.NewReader(os.Stdin)
-	for repeatFlag {
-		fmt.Printf("Are you sure you want to delete %s? Did you mean to run 'down'?\nY/y - Yes\nN/n - No\n", migrationName)
-		YNInput, err := reader.ReadString('\n')
-		if err != nil {
-			return err
-		}
-		YNInput = strings.TrimSpace(YNInput)
-		fmt.Println("You selected", YNInput)
-		if YNInput == "Y" || YNInput == "y" {
-			repeatFlag = false
 
-			upMigrationNameWithExt := fmt.Sprintf("%s%s", migrationName, ".up.sql")
-			upMigrationPath := path.Join(migrationStore.config.DirectoryName, upMigrationNameWithExt)
-			err := migrationStore.deleteFile(upMigrationPath)
-			if err != nil {
-				return err
-			}
-
-			downMigrationNameWithExt := fmt.Sprintf("%s%s", migrationName, ".down.sql")
-			downMigrationPath := path.Join(migrationStore.config.DirectoryName, downMigrationNameWithExt)
-			err = migrationStore.deleteFile(downMigrationPath)
-			if err != nil {
-				return err
-			}
-		}
-		if YNInput == "N" || YNInput == "n" {
-			repeatFlag = false
-		}
+	upMigrationNameWithExt := fmt.Sprintf("%s%s", migrationName, ".up.sql")
+	upMigrationPath := path.Join(migrationStore.config.DirectoryName, upMigrationNameWithExt)
+	err := migrationStore.deleteFile(upMigrationPath)
+	if err != nil {
+		return err
 	}
+
+	downMigrationNameWithExt := fmt.Sprintf("%s%s", migrationName, ".down.sql")
+	downMigrationPath := path.Join(migrationStore.config.DirectoryName, downMigrationNameWithExt)
+	err = migrationStore.deleteFile(downMigrationPath)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -300,10 +288,6 @@ func (migrationStore *MigrationStore) PurgeData() error {
 		return err
 	}
 	err = os.RemoveAll(migrationStore.config.DirectoryName)
-	if err != nil {
-		return err
-	}
-	err = os.Remove(constants.CONFIG_FILE)
 	if err != nil {
 		return err
 	}

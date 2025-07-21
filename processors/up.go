@@ -20,7 +20,7 @@ func RunUp(upFlagData *types.UpFlagData, migrationStore *migrations.MigrationSto
 	fromHereFlag := false
 
 	if isDryRun {
-		fmt.Println("Initiating with dryrun")
+		fmt.Println("Initiating with dryrun, no sql changes will be commited")
 	}
 
 	lastRow, err := migrationStore.DBGetLatestMigration(isDryRun)
@@ -28,7 +28,7 @@ func RunUp(upFlagData *types.UpFlagData, migrationStore *migrations.MigrationSto
 		return err
 	}
 	if lastRow == nil {
-		fmt.Println("found no previous up migrations\n")
+		fmt.Printf("found no previous up migrations\n\n")
 		fromHereFlag = true
 	} else {
 		fmt.Println(lastRow.MigrationName)

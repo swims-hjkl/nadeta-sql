@@ -133,10 +133,10 @@ func main() {
 		fmt.Print("\n\nstatus: displays what migrations have been applied and what are pending\n")
 		flagSetStatus.FlagSet.PrintDefaults()
 		fmt.Print("\n\nlist: lists all the migrations known to the system\n")
-		fmt.Print("\n\npurge: Caution: Purges all data related to migrations\n")
+		fmt.Print("\n\npurge: Caution! Purges all data related to migrations\n")
 		fmt.Print("\n\n")
 	default:
-		fmt.Println("Please provide valid arguments")
+		fmt.Println("Please provide valid arguments\n")
 		os.Exit(0)
 	}
 	fmt.Printf("\n\n")
