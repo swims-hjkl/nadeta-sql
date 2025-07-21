@@ -3,7 +3,7 @@
 
 ## Building using Make
 
-``` bash
+```
 Available targets:
   build   - Build the app
   test    - Run unit tests
@@ -15,7 +15,7 @@ Available targets:
 
 ## Usage:
 
-```bash
+```
 init: used to initialize sqlmigrate (mandatory before using the tool)
   -connection-string string
     	connection string to the database
