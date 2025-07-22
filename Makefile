@@ -9,7 +9,7 @@ DIST_DIR := dist
 build:
 	@echo "building $(APP_NAME)..."
 	@mkdir -p $(DIST_DIR)
-	@GOOS=windows GOARCH=amd64 go build -ldflags "$(LD_FLAGS)" -o "$(DIST_DIR)/$(APP_NAME)-$(VERSION)-windows-amd64"
+	@GOOS=windows GOARCH=amd64 go build -ldflags "$(LD_FLAGS)" -o "$(DIST_DIR)/$(APP_NAME)-$(VERSION)-windows-amd64.exe"
 	@GOOS=darwin GOARCH=amd64 go build -ldflags "$(LD_FLAGS)" -o "$(DIST_DIR)/$(APP_NAME)-$(VERSION)-darwin-amd64"
 	@GOOS=linux GOARCH=amd64 go build -ldflags "$(LD_FLAGS)" -o "$(DIST_DIR)/$(APP_NAME)-$(VERSION)-linux-amd64"
 	@GOOS=darwin GOARCH=arm64 go build -ldflags "$(LD_FLAGS)" -o "$(DIST_DIR)/$(APP_NAME)-$(VERSION)-darwin-arm64"
