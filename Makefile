@@ -1,3 +1,5 @@
+VERSION ?= dev
+LD_FLAGS = -X 'main.VERSION=$(VERSION)'
 APP_NAME := sqlmigrator
 DIST_DIR := dist
 CONFIG_FILE := .sqlmigratorconfig.json
@@ -8,7 +10,11 @@ CONFIG_FILE := .sqlmigratorconfig.json
 build:
 	@echo "building $(APP_NAME)..."
 	@mkdir -p $(DIST_DIR)
-	@go build -o "$(DIST_DIR)/$(APP_NAME)"
+	@GOOS=windows GOARCH=amd64 go build -ldflags "$(LD_FLAGS)" -o "$(DIST_DIR)/$(APP_NAME)-windows-amd64"
+	@GOOS=darwin GOARCH=amd64 go build -ldflags "$(LD_FLAGS)" -o "$(DIST_DIR)/$(APP_NAME)-darwin-amd64"
+	@GOOS=linux GOARCH=amd64 go build -ldflags "$(LD_FLAGS)" -o "$(DIST_DIR)/$(APP_NAME)-linux-amd64"
+	@GOOS=darwin GOARCH=arm64 go build -ldflags "$(LD_FLAGS)" -o "$(DIST_DIR)/$(APP_NAME)-darwin-arm64"
+	@GOOS=linux GOARCH=arm64 go build -ldflags "$(LD_FLAGS)" -o "$(DIST_DIR)/$(APP_NAME)-linux-arm64"
 	@echo "built $(APP_NAME) at $(DIST_DIR)/$(APP_NAME)"
 
 clean:

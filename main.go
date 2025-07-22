@@ -29,6 +29,8 @@ import (
 	"github.com/swims/nadeta-sql/types"
 )
 
+var VERSION string
+
 func main() {
 
 	flagSetInit := getFlagSetInit()
@@ -53,7 +55,7 @@ func main() {
 
 	fmt.Printf("\n\n")
 
-	if os.Args[1] != "init" && os.Args[1] != "help" {
+	if os.Args[1] != "init" && os.Args[1] != "help" && os.Args[1] != "version" {
 		config, err = helpers.GetConfig()
 		if err != nil && err.Error() == "Config not present" {
 			log.Fatal("did not find configuration file, did you forget to run init?")
@@ -119,6 +121,8 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+	case "version":
+		fmt.Println("nadeta-sql version", VERSION)
 	case "help":
 		fmt.Print("\n\ninit: used to initialize sqlmigrate (mandatory before using the tool)\n")
 		flagSetInit.FlagSet.PrintDefaults()
@@ -134,9 +138,10 @@ func main() {
 		flagSetStatus.FlagSet.PrintDefaults()
 		fmt.Print("\n\nlist: lists all the migrations known to the system\n")
 		fmt.Print("\n\npurge: Caution! Purges all data related to migrations\n")
+		fmt.Print("\n\nversion: Prints the version of nadeta-sql")
 		fmt.Print("\n\n")
 	default:
-		fmt.Println("Please provide valid arguments\n")
+		fmt.Println("Please provide valid arguments")
 		os.Exit(0)
 	}
 	fmt.Printf("\n\n")
