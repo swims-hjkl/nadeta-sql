@@ -6,7 +6,7 @@ import (
 	"github.com/swims/nadeta-sql/types"
 )
 
-const FOLDER_NAME string = "migration-files"
+const FOLDER_NAME string = "nadeta-migration-files"
 
 func getFlagSetInit() *types.InitFlagData {
 	flagSet := flag.NewFlagSet("init", flag.ExitOnError)

@@ -1,4 +1,5 @@
 dist
 .nadeta-sql-config.json
-migration-files
+nadeta-migration-files
 *.db
+.DS_Store
