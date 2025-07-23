@@ -6,8 +6,11 @@ package processors
 // sqlmigrate down --name migrationname --dryrun
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/swims/nadeta-sql/migrations"
 	"github.com/swims/nadeta-sql/types"
@@ -19,6 +22,29 @@ func RunDown(downFlagData *types.DownFlagData, migrationStore *migrations.Migrat
 
 	if isDryRun {
 		fmt.Println("Initiating with dryrun")
+	}
+
+	if steps == 0 && !isDryRun {
+		repeatFlag := true
+		reader := bufio.NewReader(os.Stdin)
+		for repeatFlag {
+			fmt.Println("Are you sure you want to run down all the migrations? (Y/y):")
+			YNInput, err := reader.ReadString('\n')
+			if err != nil {
+				return err
+			}
+			YNInput = strings.TrimSpace(YNInput)
+			fmt.Println("You selected", YNInput)
+			if YNInput == "Y" || YNInput == "y" {
+				fmt.Printf("Running down all migrations...\n\n")
+				repeatFlag = false
+			} else {
+				fmt.Println("Quitting...")
+				repeatFlag = false
+				return nil
+			}
+		}
+
 	}
 
 	appliedMigrations, err := migrationStore.DBGetAppliedMigrations(steps, true)
