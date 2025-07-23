@@ -58,7 +58,10 @@ func (migrationStore *MigrationStore) RunMigration(migrationName string, migrati
 	if !isSQLPresentInMigration(query) {
 		return errors.New("No SQL found in migration")
 	}
-	migrationStore.dbUtil.RunExec(*query, nil, isDryRun)
+	err = migrationStore.dbUtil.RunExec(*query, nil, isDryRun)
+	if err != nil {
+		return err
+	}
 	if !isDryRun {
 		if migrationType == types.MIGRATION_TYPE_DOWN {
 			err := migrationStore.DBDeleteMigrationData(migrationName)
